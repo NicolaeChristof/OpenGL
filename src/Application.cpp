@@ -48,7 +48,12 @@ int main(void)
     // Select buffer as our active vertex buffer
     glBindBuffer(GL_ARRAY_BUFFER, buffer);
     // Add data to our buffer
-    glBufferData(GL_ARRAY_BUFFER, 6 * sizeof(float), positions, GL_STATIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(float) * 6, positions, GL_STATIC_DRAW);
+
+    // Define the vertex attributes
+    glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, sizeof(float) * 2, 0);
+    // Enable the vertex attribute array
+    glEnableVertexAttribArray(0);
 
     /* Loop until the user closes the window */
     while (!glfwWindowShouldClose(window))
