@@ -7,7 +7,7 @@ int main(void)
 {
     GLFWwindow* window;
 
-    /* Initialize the library */
+    /* Initialize the glfw library */
     if (!glfwInit())
     {
         return -1;
@@ -24,14 +24,31 @@ int main(void)
     /* Make the window's context current */
     glfwMakeContextCurrent(window);
 
-    // Must call glewInit after a valid context is created
+    // glewInit must be called *after* a valid context is created (above)
     if (glewInit() != GLEW_OK)
     {
         std::cerr << "Error: glewInit did not return GLEW_OK" << std::endl;
         return -1;
     }
 
+    // Print our driver version
     std::cout << "GL Version: " << glGetString(GL_VERSION) << std::endl;
+
+    float positions[6] =
+    {
+        -0.5f, -0.5f,
+         0.0f,  0.5f,
+         0.5f, -0.5f
+    };
+
+    // Declare an unsigned int to be our vertex buffer
+    unsigned int buffer;
+    // call glGenBuffers to create the buffer and store it in &buffer
+    glGenBuffers(1, &buffer);
+    // Select buffer as our active vertex buffer
+    glBindBuffer(GL_ARRAY_BUFFER, buffer);
+    // Add data to our buffer
+    glBufferData(GL_ARRAY_BUFFER, 6 * sizeof(float), positions, GL_STATIC_DRAW);
 
     /* Loop until the user closes the window */
     while (!glfwWindowShouldClose(window))
@@ -39,11 +56,8 @@ int main(void)
         /* Render here */
         glClear(GL_COLOR_BUFFER_BIT);
 
-        glBegin(GL_TRIANGLES);
-        glVertex2f(-0.5f, -0.5f);
-        glVertex2f(0.0f, 0.5f);
-        glVertex2f(0.5f, -0.5f);
-        glEnd();
+        // Draw call
+        glDrawArrays(GL_TRIANGLES, 0, 3);
 
         /* Swap front and back buffers */
         glfwSwapBuffers(window);
