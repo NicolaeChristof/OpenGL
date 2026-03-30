@@ -3,6 +3,46 @@
 
 #include <iostream>
 
+static unsigned int CompileShader(unsigned int type, const std::string& source)
+{
+    // Creates a shader object (enum shaderType)
+    unsigned int id = glCreateShader(type);
+    const char* src = source.c_str();
+    // Replaces the source code in a shader object (unsigned int shader, int count, char** string, int* length)
+    glShaderSource(id, 1, &src, nullptr);
+    // Compiles a shader object (unsigned int shaderID)
+    glCompileShader(id);
+
+    // TODO: Error handling
+
+    return id;
+}
+
+static unsigned int CreateShader(const std::string& vertexShader, const std::string& fragmentShader)
+{
+    // Creates a program object
+    unsigned int program = glCreateProgram();
+
+    // Compile our shaders
+    unsigned int vs = CompileShader(GL_VERTEX_SHADER, vertexShader);
+    unsigned int fs = CompileShader(GL_FRAGMENT_SHADER, fragmentShader);
+
+    // Attaches a shader object to a program object (unsigned int programID, unsigned int shaderID)
+    glAttachShader(program, vs);
+    glAttachShader(program, fs);
+
+    // Links a program object (unsigned int programID)
+    glLinkProgram(program);
+    // Validates a program object (unsigned int programID)
+    glValidateProgram(program);
+
+    // Deletes a shader object (unsigned int shaderID)
+    glDeleteShader(vs);
+    glDeleteShader(fs);
+
+    return program;
+}
+
 int main(void)
 {
     GLFWwindow* window;
@@ -43,14 +83,16 @@ int main(void)
 
     // Declare an unsigned int to be our vertex buffer
     unsigned int buffer;
-    // call glGenBuffers to create the buffer and store it in &buffer
+    // Generate buffer object names (int size, unsigned int* buffer)
     glGenBuffers(1, &buffer);
-    // Select buffer as our active vertex buffer
+    // Bind means to select a buffer as our active vertex buffer
+    // Bind a named buffer object (enum target, unsigned int buffer)
     glBindBuffer(GL_ARRAY_BUFFER, buffer);
-    // Add data to our buffer
+    // Creates and initializes a buffer objects data store (enum target, size (bytes), optional pointer to data, enum usage)
     glBufferData(GL_ARRAY_BUFFER, sizeof(float) * 6, positions, GL_STATIC_DRAW);
 
-    // Define the vertex attributes
+    // Specify the layout of the buffer (vertex attributes)
+    // (int index, int size, enum type, bool normalized, size(bytes) stride, (offset for first component) pointer)
     glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, sizeof(float) * 2, 0);
     // Enable the vertex attribute array
     glEnableVertexAttribArray(0);
@@ -61,7 +103,7 @@ int main(void)
         /* Render here */
         glClear(GL_COLOR_BUFFER_BIT);
 
-        // Draw call
+        // Draw the currently bound buffer
         glDrawArrays(GL_TRIANGLES, 0, 3);
 
         /* Swap front and back buffers */
