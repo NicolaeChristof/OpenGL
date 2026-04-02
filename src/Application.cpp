@@ -112,6 +112,32 @@ int main(void)
     // Enable the vertex attribute array
     glEnableVertexAttribArray(0);
 
+    // Shader Code
+    std::string vertexShader =
+        "#version 330 core\n"
+        "\n"
+        "layout(location = 0) in vec4 position;\n"
+        "\n"
+        "void main()\n"
+        "{\n"
+        "   gl_Position = position;\n"
+        "}\n";
+
+    std::string fragmentShader = 
+        "#version 330 core\n"
+        "\n"
+        "layout(location = 0) out vec4 color;\n"
+        "\n"
+        "void main()\n"
+        "{\n"
+        "   color = vec4(1.0, 0.0, 0.0, 1.0);\n"
+        "}\n";
+
+    // Our CreateShader function returns a program id
+    unsigned int shader = CreateShader(vertexShader, fragmentShader);
+    // Installs a program object as part of current rendering state (unsigned int programID)
+    glUseProgram(shader);
+
     /* Loop until the user closes the window */
     while (!glfwWindowShouldClose(window))
     {
@@ -127,6 +153,9 @@ int main(void)
         /* Poll for and process events */
         glfwPollEvents();
     }
+
+    // Deletes a program object
+    glDeleteProgram(shader);
 
     glfwTerminate();
     return 0;
