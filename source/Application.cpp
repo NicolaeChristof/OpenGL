@@ -7,6 +7,27 @@
 #include <string>
 #include <sstream>
 
+#define ASSERT(x) if (!(x)) __debugbreak();
+#define GLCall(x)   GLClearError();\
+                    x;\
+                    ASSERT(GLCheckError(__FILE__, #x, __LINE__))
+
+static void GLClearError()
+{
+    while (glGetError() != GL_NO_ERROR);
+}
+
+static bool GLCheckError(const char* file, const char* function, int line)
+{
+    static bool success = true;
+    while (GLenum error = glGetError())
+    {
+        std::cout << "[OpenGL Error] (" << error << "): " << file << " " << function << " : " << line << std::endl;
+        success = false;
+    }
+    return success;
+}
+
 struct ShaderProgramSource
 {
     std::string vertexSource;
@@ -182,7 +203,7 @@ int main(void)
     unsigned int indexBuffer;
     glGenBuffers(1, &indexBuffer);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexBuffer); // index buffer binds to GL_ELEMENT_ARRAY_BUFFER
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW); // for size: num triangles * 3 indices per triangle * sizeof(unsigned int)
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
 
     // Parse shader source code
     ShaderProgramSource source = ParseShader("resources/shaders/Basic.shader");
@@ -198,7 +219,7 @@ int main(void)
         glClear(GL_COLOR_BUFFER_BIT);
 
         // Draw the currently bound buffer
-        glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+        GLCall(glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0));
 
         /* Swap front and back buffers */
         glfwSwapBuffers(window);
