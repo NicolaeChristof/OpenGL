@@ -1,7 +1,18 @@
-# Directories
-.vs/
-bin/
-bin-int/
+# Build Directories
+[Dd]ebug/
+[Rr]elease/
+OpenGL/
 
-# Files
+# Executables and Symbols
+*.exe
+*.exe.recipe
+*.idb
+*.pdb
+*.ilk
+*.obj
+*.log
+*.tlog
+
+# Visual Studio
+.vs/
 *.user
