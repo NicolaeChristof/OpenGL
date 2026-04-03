@@ -1,3 +1,4 @@
+// https://docs.gl
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
 
@@ -137,31 +138,51 @@ int main(void)
         return -1;
     }
 
+#if _DEBUG
     // Print our driver version
     std::cout << "Driver version: " << glGetString(GL_VERSION) << std::endl;
+#endif
 
-    float positions[6] =
+    float positions[] =
     {
-        -0.5f, -0.5f,
-         0.0f,  0.5f,
-         0.5f, -0.5f
+        -0.5f, -0.5f, // 0
+         0.5f, -0.5f, // 1
+         0.5f,  0.5f, // 2
+        -0.5f,  0.5f  // 3
     };
+#if _DEBUG
+    std::cout << "size of positions: " << sizeof(positions) << std::endl;
+#endif
+
+    unsigned int indices[] =
+    {
+        0, 1, 2,
+        2, 3, 0
+    };
+#if _DEBUG
+    std::cout << "size of indicies: " << sizeof(indices) << std::endl;
+#endif
 
     // Declare an unsigned int to be our vertex buffer
-    unsigned int buffer;
+    unsigned int vertexBuffer;
     // Generate buffer object names (int size, unsigned int* buffer)
-    glGenBuffers(1, &buffer);
+    glGenBuffers(1, &vertexBuffer);
     // Bind means to select a buffer as our active vertex buffer
     // Bind a named buffer object (enum target, unsigned int buffer)
-    glBindBuffer(GL_ARRAY_BUFFER, buffer);
+    glBindBuffer(GL_ARRAY_BUFFER, vertexBuffer);
     // Creates and initializes a buffer objects data store (enum target, size (bytes), optional pointer to data, enum usage)
-    glBufferData(GL_ARRAY_BUFFER, sizeof(float) * 6, positions, GL_STATIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(positions), positions, GL_STATIC_DRAW);
 
     // Specify the layout of the buffer (vertex attributes)
     // (int index, int size, enum type, bool normalized, size(bytes) stride, (offset for first component) pointer)
     glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, sizeof(float) * 2, 0);
     // Enable the vertex attribute array
     glEnableVertexAttribArray(0);
+
+    unsigned int indexBuffer;
+    glGenBuffers(1, &indexBuffer);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexBuffer); // index buffer binds to GL_ELEMENT_ARRAY_BUFFER
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW); // for size: num triangles * 3 indices per triangle * sizeof(unsigned int)
 
     // Parse shader source code
     ShaderProgramSource source = ParseShader("resources/shaders/Basic.shader");
@@ -177,7 +198,7 @@ int main(void)
         glClear(GL_COLOR_BUFFER_BIT);
 
         // Draw the currently bound buffer
-        glDrawArrays(GL_TRIANGLES, 0, 3);
+        glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 
         /* Swap front and back buffers */
         glfwSwapBuffers(window);
