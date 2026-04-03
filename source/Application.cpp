@@ -152,6 +152,9 @@ int main(void)
     /* Make the window's context current */
     glfwMakeContextCurrent(window);
 
+    // turn on vsync
+    glfwSwapInterval(1);
+
     // glewInit must be called *after* a valid context is created (above)
     if (glewInit() != GLEW_OK)
     {
@@ -212,14 +215,35 @@ int main(void)
     // Installs a program object as part of current rendering state (unsigned int programID)
     glUseProgram(shader);
 
+    int location = glGetUniformLocation(shader, "u_Color");
+    ASSERT(location != -1);
+    // Specify the value of a uniform variable for the current program object
+    glUniform4f(location, 1.0f, 0.2f, 0.2f, 1.0f);
+
+    float r = 0.0f;
+    float increment = 0.05f;
     /* Loop until the user closes the window */
     while (!glfwWindowShouldClose(window))
     {
         /* Render here */
         glClear(GL_COLOR_BUFFER_BIT);
 
+        // Set color
+        glUniform4f(location, r, 0.2f, 0.8f, 1.0f);
+
         // Draw the currently bound buffer
         GLCall(glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0));
+
+        if (r > 1.0f)
+        {
+            increment = -0.05f;
+        }
+        else if (r < 0.0f)
+        {
+            increment = 0.05f;
+        }
+
+        r += increment;
 
         /* Swap front and back buffers */
         glfwSwapBuffers(window);
