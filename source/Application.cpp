@@ -141,6 +141,10 @@ int main(void)
         return -1;
     }
 
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
+    glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+
     /* Create a windowed mode window and its OpenGL context */
     window = glfwCreateWindow(640, 480, "Hello World", NULL, NULL);
     if (!window)
@@ -187,6 +191,10 @@ int main(void)
     std::cout << "size of indicies: " << sizeof(indices) << std::endl;
 #endif
 
+    unsigned int vertexArray;
+    glGenVertexArrays(1, &vertexArray);
+    glBindVertexArray(vertexArray);
+
     // Declare an unsigned int to be our vertex buffer
     unsigned int vertexBuffer;
     // Generate buffer object names (int size, unsigned int* buffer)
@@ -197,11 +205,11 @@ int main(void)
     // Creates and initializes a buffer objects data store (enum target, size (bytes), optional pointer to data, enum usage)
     glBufferData(GL_ARRAY_BUFFER, sizeof(positions), positions, GL_STATIC_DRAW);
 
-    // Specify the layout of the buffer (vertex attributes)
-    // (int index, int size, enum type, bool normalized, size(bytes) stride, (offset for first component) pointer)
-    glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, sizeof(float) * 2, 0);
     // Enable the vertex attribute array
     glEnableVertexAttribArray(0);
+    // Specify the layout of the buffer (vertex attributes) ALSO BINDS vertexBuffer to vertexArray
+    // (int index, int size, enum type, bool normalized, size(bytes) stride, (offset for first component) pointer)
+    glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, sizeof(float) * 2, 0);
 
     unsigned int indexBuffer;
     glGenBuffers(1, &indexBuffer);
@@ -220,6 +228,12 @@ int main(void)
     // Specify the value of a uniform variable for the current program object
     glUniform4f(location, 1.0f, 0.2f, 0.2f, 1.0f);
 
+    // Unbind everything
+    glBindVertexArray(0);
+    glUseProgram(0);
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+
     float r = 0.0f;
     float increment = 0.05f;
     /* Loop until the user closes the window */
@@ -228,8 +242,14 @@ int main(void)
         /* Render here */
         glClear(GL_COLOR_BUFFER_BIT);
 
-        // Set color
-        glUniform4f(location, r, 0.2f, 0.8f, 1.0f);
+        // Bind program
+        glUseProgram(shader);
+        // Set uniforms
+        glUniform4f(location, r, 0.3f, 0.8f, 1.0f);
+        // Bind vertex array
+        glBindVertexArray(vertexArray);
+        // Bind index buffer
+        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexBuffer);
 
         // Draw the currently bound buffer
         GLCall(glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0));
