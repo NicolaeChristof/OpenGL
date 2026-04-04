@@ -133,6 +133,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="source\Shader.cpp" />
     <ClCompile Include="source\Application.cpp" />
     <ClCompile Include="source\IndexBuffer.cpp" />
     <ClCompile Include="source\Renderer.cpp" />
@@ -145,6 +146,7 @@
   <ItemGroup>
     <ClInclude Include="source\IndexBuffer.h" />
     <ClInclude Include="source\Renderer.h" />
+    <ClInclude Include="source\Shader.h" />
     <ClInclude Include="source\VertexArray.h" />
     <ClInclude Include="source\VertexBuffer.h" />
     <ClInclude Include="source\VertexBufferLayout.h" />

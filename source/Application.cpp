@@ -3,9 +3,7 @@
 #include <GLFW/glfw3.h>
 
 #include <iostream>
-#include <fstream>
 #include <string>
-#include <sstream>
 
 #include "Renderer.h"
 
@@ -13,108 +11,7 @@
 #include "VertexBuffer.h"
 #include "IndexBuffer.h"
 
-struct ShaderProgramSource
-{
-    std::string vertexSource;
-    std::string fragmentSource;
-};
-
-static ShaderProgramSource ParseShader(const std::string& filepath)
-{
-    // Opens file at filepath
-    std::ifstream stream(filepath);
-
-    enum class ShaderType
-    {
-        NONE = -1,
-        VERTEX = 0,
-        FRAGMENT = 1
-    };
-
-    // Read one line at a time
-    std::string line;
-    // Create an array to store our shader code
-    std::stringstream ss[2]; // 0 for vertex, 1 for fragment
-    // Track which "mode" we are in
-    ShaderType type = ShaderType::NONE;
-    while (getline(stream, line))
-    {
-        // Find where each shader begins using our custom #shader tag
-        if (line.find("#shader") != std::string::npos)
-        {
-            // Check which shader was found and assign type
-            if (line.find("vertex") != std::string::npos)
-            {
-                type = ShaderType::VERTEX;
-            }
-            else if (line.find("fragment") != std::string::npos)
-            {
-                type = ShaderType::FRAGMENT;
-            }
-        }
-        else
-        {
-            ss[(int)type] << line << '\n';
-        }
-    }
-
-    return { ss[0].str(), ss[1].str() };
-}
-
-static unsigned int CompileShader(unsigned int type, const std::string& source)
-{
-    // Creates a shader object (enum shaderType)
-    unsigned int id = glCreateShader(type);
-    const char* src = source.c_str();
-    // Replaces the source code in a shader object (unsigned int shader, int count, char** string, int* length)
-    glShaderSource(id, 1, &src, nullptr);
-    // Compiles a shader object (unsigned int shaderID)
-    glCompileShader(id);
-
-    // Error Handling
-    int result;
-    glGetShaderiv(id, GL_COMPILE_STATUS, &result);
-    if (result == GL_FALSE)
-    {
-        int length;
-        // Returns a parameter from a shader object (unsigned int shaderID, enum paramName, int* outparam)
-        glGetShaderiv(id, GL_INFO_LOG_LENGTH, &length);
-        char* message = (char*)alloca(length * sizeof(char));
-        // Returns the information log for a shader object (unsigned int shaderID, int length, int* length, char* message)
-        glGetShaderInfoLog(id, length, &length, message);
-        std::cerr << "Failed to compile " << (type == GL_VERTEX_SHADER ? "vertex" : "fragment") << " shader!" << std::endl;
-        std::cerr << message << std::endl;
-        glDeleteShader(id);
-        return 0;
-    }
-
-    return id;
-}
-
-static unsigned int CreateShader(const std::string& vertexShader, const std::string& fragmentShader)
-{
-    // Creates a program object
-    unsigned int program = glCreateProgram();
-
-    // Compile our shaders
-    unsigned int vs = CompileShader(GL_VERTEX_SHADER, vertexShader);
-    unsigned int fs = CompileShader(GL_FRAGMENT_SHADER, fragmentShader);
-
-    // Attaches a shader object to a program object (unsigned int programID, unsigned int shaderID)
-    glAttachShader(program, vs);
-    glAttachShader(program, fs);
-
-    // Links a program object (unsigned int programID)
-    glLinkProgram(program);
-    // Validates a program object (unsigned int programID)
-    glValidateProgram(program);
-
-    // Deletes a shader object (unsigned int shaderID)
-    glDeleteShader(vs);
-    glDeleteShader(fs);
-
-    return program;
-}
+#include "Shader.h"
 
 int main(void)
 {
@@ -152,7 +49,6 @@ int main(void)
     }
 
 #if _DEBUG
-    // Print our driver version
     std::cout << "Driver version: " << glGetString(GL_VERSION) << std::endl;
 #endif
 
@@ -164,7 +60,7 @@ int main(void)
         -0.5f,  0.5f  // 3
     };
 #if _DEBUG
-    std::cout << "size of positions: " << sizeof(positions) << std::endl;
+    std::cout << "sizeof positions: " << sizeof(positions) << std::endl;
 #endif
 
     unsigned int indices[] =
@@ -173,7 +69,7 @@ int main(void)
         2, 3, 0
     };
 #if _DEBUG
-    std::cout << "size of indicies: " << sizeof(indices) << std::endl;
+    std::cout << "sizeof indicies: " << sizeof(indices) << std::endl;
     std::cout << "count of indicies: " << std::size(indices) << std::endl;
 #endif
 
@@ -182,24 +78,15 @@ int main(void)
     VertexBufferLayout layout;
     layout.Push<float>(2);
     va.AddBuffer(vb, layout);
-
     IndexBuffer ib(indices, std::size(indices));
 
-    // Parse shader source code
-    ShaderProgramSource source = ParseShader("resources/shaders/Basic.shader");
-    // Our CreateShader function returns a program id
-    unsigned int shader = CreateShader(source.vertexSource, source.fragmentSource);
-    // Installs a program object as part of current rendering state (unsigned int programID)
-    glUseProgram(shader);
-
-    int location = glGetUniformLocation(shader, "u_Color");
-    ASSERT(location != -1);
-    // Specify the value of a uniform variable for the current program object
-    glUniform4f(location, 1.0f, 0.2f, 0.2f, 1.0f);
+    Shader shader("resources/shaders/Basic.shader");
+    shader.Bind();
+    shader.SetUniform4f("u_Color", 1.0f, 1.0f, 1.0f, 1.0f);
 
     // Unbind everything
     va.Unbind();
-    glUseProgram(0);
+    shader.Unbind();
     vb.Unbind();
     ib.Unbind();
 
@@ -212,9 +99,9 @@ int main(void)
         glClear(GL_COLOR_BUFFER_BIT);
 
         // Bind program
-        glUseProgram(shader);
+        shader.Bind();
         // Set uniforms
-        glUniform4f(location, r, 0.3f, 0.8f, 1.0f);
+        shader.SetUniform4f("u_Color", r, 0.3f, 0.8f, 1.0f);
         // Bind vertex array
         va.Bind();
         // Bind index buffer
@@ -240,9 +127,6 @@ int main(void)
         /* Poll for and process events */
         glfwPollEvents();
     }
-
-    // Deletes a program object
-    glDeleteProgram(shader);
 
     glfwTerminate();
     return 0;
