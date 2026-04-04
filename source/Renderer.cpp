@@ -9,7 +9,7 @@ void GLClearError()
 
 bool GLCheckError(const char* file, const char* function, int line)
 {
-    static bool success = true;
+    bool success = true;
     while (GLenum error = glGetError())
     {
         std::cout << "[OpenGL Error] (" << error << "): " << file << " " << function << " : " << line << std::endl;

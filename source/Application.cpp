@@ -8,6 +8,8 @@
 #include <sstream>
 
 #include "Renderer.h"
+#include "VertexBuffer.h"
+#include "IndexBuffer.h"
 
 struct ShaderProgramSource
 {
@@ -170,21 +172,14 @@ int main(void)
     };
 #if _DEBUG
     std::cout << "size of indicies: " << sizeof(indices) << std::endl;
+    std::cout << "count of indicies: " << std::size(indices) << std::endl;
 #endif
 
     unsigned int vertexArray;
     glGenVertexArrays(1, &vertexArray);
     glBindVertexArray(vertexArray);
 
-    // Declare an unsigned int to be our vertex buffer
-    unsigned int vertexBuffer;
-    // Generate buffer object names (int size, unsigned int* buffer)
-    glGenBuffers(1, &vertexBuffer);
-    // Bind means to select a buffer as our active vertex buffer
-    // Bind a named buffer object (enum target, unsigned int buffer)
-    glBindBuffer(GL_ARRAY_BUFFER, vertexBuffer);
-    // Creates and initializes a buffer objects data store (enum target, size (bytes), optional pointer to data, enum usage)
-    glBufferData(GL_ARRAY_BUFFER, sizeof(positions), positions, GL_STATIC_DRAW);
+    VertexBuffer vb(positions, sizeof(positions));
 
     // Enable the vertex attribute array
     glEnableVertexAttribArray(0);
@@ -192,10 +187,7 @@ int main(void)
     // (int index, int size, enum type, bool normalized, size(bytes) stride, (offset for first component) pointer)
     glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, sizeof(float) * 2, 0);
 
-    unsigned int indexBuffer;
-    glGenBuffers(1, &indexBuffer);
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexBuffer); // index buffer binds to GL_ELEMENT_ARRAY_BUFFER
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
+    IndexBuffer ib(indices, std::size(indices));
 
     // Parse shader source code
     ShaderProgramSource source = ParseShader("resources/shaders/Basic.shader");
@@ -230,7 +222,7 @@ int main(void)
         // Bind vertex array
         glBindVertexArray(vertexArray);
         // Bind index buffer
-        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexBuffer);
+        ib.Bind();
 
         // Draw the currently bound buffer
         GLCall(glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0));
