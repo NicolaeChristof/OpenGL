@@ -198,10 +198,10 @@ int main(void)
     glUniform4f(location, 1.0f, 0.2f, 0.2f, 1.0f);
 
     // Unbind everything
-    glBindVertexArray(0);
+    va.Unbind();
     glUseProgram(0);
-    glBindBuffer(GL_ARRAY_BUFFER, 0);
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+    vb.Unbind();
+    ib.Unbind();
 
     float r = 0.0f;
     float increment = 0.05f;
