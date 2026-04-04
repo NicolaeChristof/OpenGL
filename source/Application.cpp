@@ -7,26 +7,7 @@
 #include <string>
 #include <sstream>
 
-#define ASSERT(x) if (!(x)) __debugbreak();
-#define GLCall(x)   GLClearError();\
-                    x;\
-                    ASSERT(GLCheckError(__FILE__, #x, __LINE__))
-
-static void GLClearError()
-{
-    while (glGetError() != GL_NO_ERROR);
-}
-
-static bool GLCheckError(const char* file, const char* function, int line)
-{
-    static bool success = true;
-    while (GLenum error = glGetError())
-    {
-        std::cout << "[OpenGL Error] (" << error << "): " << file << " " << function << " : " << line << std::endl;
-        success = false;
-    }
-    return success;
-}
+#include "Renderer.h"
 
 struct ShaderProgramSource
 {
