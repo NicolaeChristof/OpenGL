@@ -8,6 +8,8 @@
 #include <sstream>
 
 #include "Renderer.h"
+
+#include "VertexArray.h"
 #include "VertexBuffer.h"
 #include "IndexBuffer.h"
 
@@ -175,17 +177,11 @@ int main(void)
     std::cout << "count of indicies: " << std::size(indices) << std::endl;
 #endif
 
-    unsigned int vertexArray;
-    glGenVertexArrays(1, &vertexArray);
-    glBindVertexArray(vertexArray);
-
+    VertexArray va;
     VertexBuffer vb(positions, sizeof(positions));
-
-    // Enable the vertex attribute array
-    glEnableVertexAttribArray(0);
-    // Specify the layout of the buffer (vertex attributes) ALSO BINDS vertexBuffer to vertexArray
-    // (int index, int size, enum type, bool normalized, size(bytes) stride, (offset for first component) pointer)
-    glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, sizeof(float) * 2, 0);
+    VertexBufferLayout layout;
+    layout.Push<float>(2);
+    va.AddBuffer(vb, layout);
 
     IndexBuffer ib(indices, std::size(indices));
 
@@ -220,7 +216,7 @@ int main(void)
         // Set uniforms
         glUniform4f(location, r, 0.3f, 0.8f, 1.0f);
         // Bind vertex array
-        glBindVertexArray(vertexArray);
+        va.Bind();
         // Bind index buffer
         ib.Bind();
 
