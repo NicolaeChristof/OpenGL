@@ -11,8 +11,8 @@
 #include "VertexBuffer.h"
 #include "VertexBufferLayout.h"
 #include "IndexBuffer.h"
-
 #include "Shader.h"
+#include "Texture.h"
 
 int main(void)
 {
@@ -55,10 +55,10 @@ int main(void)
 
     float positions[] =
     {
-        -0.5f, -0.5f, // 0
-         0.5f, -0.5f, // 1
-         0.5f,  0.5f, // 2
-        -0.5f,  0.5f  // 3
+        -0.5f, -0.5f, 0.0f, 0.0f, // 0
+         0.5f, -0.5f, 1.0f, 0.0f, // 1
+         0.5f,  0.5f, 1.0f, 1.0f, // 2
+        -0.5f,  0.5f, 0.0f, 1.0f  // 3
     };
 #if _DEBUG
     std::cout << "sizeof positions: " << sizeof(positions) << std::endl;
@@ -74,9 +74,13 @@ int main(void)
     std::cout << "count of indicies: " << std::size(indices) << std::endl;
 #endif
 
+    GLCall(glEnable(GL_BLEND));
+    GLCall(glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA));
+    
     VertexArray va;
     VertexBuffer vb(positions, sizeof(positions));
     VertexBufferLayout layout;
+    layout.Push<float>(2);
     layout.Push<float>(2);
     va.AddBuffer(vb, layout);
     IndexBuffer ib(indices, std::size(indices));
@@ -84,6 +88,10 @@ int main(void)
     Shader shader("resources/shaders/Basic.shader");
     shader.Bind();
     shader.SetUniform4f("u_Color", 1.0f, 1.0f, 1.0f, 1.0f);
+
+    Texture texture("resources/textures/MadeInAbyss.png");
+    texture.Bind();
+    shader.SetUniform1i("u_Texture", 0);
 
     // Unbind everything
     va.Unbind();
