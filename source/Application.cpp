@@ -32,7 +32,7 @@ int main(void)
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
     /* Create a windowed mode window and its OpenGL context */
-    window = glfwCreateWindow(640, 480, "Hello World", NULL, NULL);
+    window = glfwCreateWindow(1920, 1080, "OpenGL Practice", NULL, NULL);
     if (!window)
     {
         glfwTerminate();
@@ -58,10 +58,10 @@ int main(void)
 
     float positions[] =
     {
-        -0.5f, -0.5f, 0.0f, 0.0f, // 0
-         0.5f, -0.5f, 1.0f, 0.0f, // 1
-         0.5f,  0.5f, 1.0f, 1.0f, // 2
-        -0.5f,  0.5f, 0.0f, 1.0f  // 3
+        0.0f, 0.0f, 0.0f, 0.0f, // 0
+        1920.0f, 0.0f, 1.0f, 0.0f, // 1
+        1920.0f, 1080.0f, 1.0f, 1.0f, // 2
+        0.0f, 1080.0f, 0.0f, 1.0f  // 3
     };
 #if _DEBUG
     std::cout << "sizeof positions: " << sizeof(positions) << std::endl;
@@ -88,7 +88,7 @@ int main(void)
     va.AddBuffer(vb, layout);
     IndexBuffer ib(indices, std::size(indices));
 
-    glm::mat4 projection = glm::ortho(-2.0f, 2.0f, -1.5f, 1.5f, -1.0f, 1.0f);
+    glm::mat4 projection = glm::ortho(0.0f, 1920.0f, 0.0f, 1080.0f, -1.0f, 1.0f);
 
     Shader shader("resources/shaders/Basic.shader");
     shader.Bind();
