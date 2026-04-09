@@ -58,10 +58,10 @@ int main(void)
 
     float positions[] =
     {
-        0.0f, 0.0f, 0.0f, 0.0f, // 0
-        1920.0f, 0.0f, 1.0f, 0.0f, // 1
-        1920.0f, 1080.0f, 1.0f, 1.0f, // 2
-        0.0f, 1080.0f, 0.0f, 1.0f  // 3
+        -1.0f, -1.0f, 0.0f, 0.0f, // 0
+         1.0f, -1.0f, 1.0f, 0.0f, // 1
+         1.0f,  1.0f, 1.0f, 1.0f, // 2
+        -1.0f,  1.0f, 0.0f, 1.0f  // 3
     };
 #if _DEBUG
     std::cout << "sizeof positions: " << sizeof(positions) << std::endl;
@@ -88,12 +88,16 @@ int main(void)
     va.AddBuffer(vb, layout);
     IndexBuffer ib(indices, std::size(indices));
 
-    glm::mat4 projection = glm::ortho(0.0f, 1920.0f, 0.0f, 1080.0f, -1.0f, 1.0f);
+    glm::mat4 projection = glm::ortho(-1.0f, 1.0f, -1.0f, 1.0f, -1.0f, 1.0f);
+    glm::mat4 view = glm::translate(glm::mat4(1.0f), glm::vec3(-0.5f, 0.0f, 0.0f));
+    glm::mat4 model = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.4f, 0.0f));
+
+    glm::mat4 mvp = projection * view * model;
 
     Shader shader("resources/shaders/Basic.shader");
     shader.Bind();
     shader.SetUniform4f("u_Color", 1.0f, 1.0f, 1.0f, 1.0f);
-    shader.SetUniformMat4f("u_MVP", projection);
+    shader.SetUniformMat4f("u_MVP", mvp);
 
     Texture texture("resources/textures/MadeInAbyss.png");
     texture.Bind();
