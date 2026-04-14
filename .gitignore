@@ -12,6 +12,7 @@ OpenGL/
 *.obj
 *.log
 *.tlog
+*.ini
 
 # Visual Studio
 .vs/
