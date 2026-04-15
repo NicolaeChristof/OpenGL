@@ -21,6 +21,8 @@
 #include "imgui/imgui_impl_glfw.h"
 #include "imgui/imgui_impl_opengl3.h"
 
+#include "examples/ExampleClearColor.h"
+
 int main(void)
 {
     GLFWwindow* window;
@@ -60,56 +62,12 @@ int main(void)
     std::cout << "Driver version: " << glGetString(GL_VERSION) << std::endl;
 #endif
 
-    float positions[] =
-    {
-        -0.25f, -0.25f, 0.0f, 0.0f, // 0
-         0.25f, -0.25f, 1.0f, 0.0f, // 1
-         0.25f,  0.25f, 1.0f, 1.0f, // 2
-        -0.25f,  0.25f, 0.0f, 1.0f  // 3
-    };
-#if _DEBUG
-    std::cout << "sizeof positions: " << sizeof(positions) << std::endl;
-#endif
-
-    unsigned int indices[] =
-    {
-        0, 1, 2,
-        2, 3, 0
-    };
-#if _DEBUG
-    std::cout << "sizeof indicies: " << sizeof(indices) << std::endl;
-    std::cout << "count of indicies: " << std::size(indices) << std::endl;
-#endif
-
     GLCall(glEnable(GL_BLEND));
     GLCall(glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA));
-    
-    VertexArray va;
-    VertexBuffer vb(positions, sizeof(positions));
-    VertexBufferLayout layout;
-    layout.Push<float>(2);
-    layout.Push<float>(2);
-    va.AddBuffer(vb, layout);
-    IndexBuffer ib(indices, std::size(indices));
-
-    glm::mat4 projection = glm::ortho(-1.0f, 1.0f, -1.0f, 1.0f, -1.0f, 1.0f);
-    
-    Shader shader("resources/shaders/Basic.shader");
-    shader.Bind();
-    shader.SetUniform4f("u_Color", 1.0f, 1.0f, 1.0f, 1.0f);
-
-    Texture texture("resources/textures/MadeInAbyss.png");
-    texture.Bind();
-    shader.SetUniform1i("u_Texture", 0);
-
-    // Unbind everything
-    va.Unbind();
-    shader.Unbind();
-    vb.Unbind();
-    ib.Unbind();
 
     Renderer renderer;
 
+    // ImGui Initialization
     ImGui::CreateContext();
     ImGuiIO& io = ImGui::GetIO();
     (void)io;
@@ -117,70 +75,25 @@ int main(void)
     ImGui_ImplOpenGL3_Init("#version 330");
     ImGui::StyleColorsDark();
 
-    glm::vec3 modeltranslationA(-0.5f, 0.0f, 0.0f);
-    glm::vec3 viewTranslationA(0.0f, 0.0f, 0.0f);
-    glm::vec3 modeltranslationB(0.5f, 0.0f, 0.0f);
-    glm::vec3 viewTranslationB(0.0f, 0.0f, 0.0f);
+    example::ExampleClearColor example;
 
-    float r = 0.0f;
-    float increment = 0.05f;
     /* Loop until the user closes the window */
     while (!glfwWindowShouldClose(window))
     {
         /* Render here */
         renderer.Clear();
 
+        example.OnUpdate(0.0f);
+        example.OnRender();
+
         // Start the Dear ImGui frame
         ImGui_ImplOpenGL3_NewFrame();
         ImGui_ImplGlfw_NewFrame();
         ImGui::NewFrame();
 
-        shader.Bind();
+        example.OnImGuiRender();
 
-        {
-            glm::mat4 model = glm::translate(glm::mat4(1.0f), modeltranslationA);
-            glm::mat4 view = glm::translate(glm::mat4(1.0f), -viewTranslationA);
-            glm::mat4 mvp = projection * view * model;
-            shader.SetUniformMat4f("u_MVP", mvp);
-
-            renderer.Draw(va, ib, shader);
-        }
-
-        {
-            glm::mat4 model = glm::translate(glm::mat4(1.0f), modeltranslationB);
-            glm::mat4 view = glm::translate(glm::mat4(1.0f), -viewTranslationB);
-            glm::mat4 mvp = projection * view * model;
-            shader.SetUniformMat4f("u_MVP", mvp);
-
-            renderer.Draw(va, ib, shader);
-        }
-
-        if (r > 1.0f)
-        {
-            increment = -0.05f;
-        }
-        else if (r < 0.0f)
-        {
-            increment = 0.05f;
-        }
-
-        r += increment;
-
-        {
-            ImGui::Begin("OpenGl Practice"); // Create a window and append into it.
-
-            ImGui::Text("This is some useful text.");
-
-            ImGui::SliderFloat2("Model A", &modeltranslationA.x, -2.0f, 2.0f); // Edit 1 float using a slider from lower bounds to upper bounds
-            ImGui::SliderFloat2("View A", &viewTranslationA.x, -2.0f, 2.0f); // Edit 1 float using a slider from lower bounds to upper bounds
-
-            ImGui::SliderFloat2("Model B", &modeltranslationB.x, -2.0f, 2.0f); // Edit 1 float using a slider from lower bounds to upper bounds
-            ImGui::SliderFloat2("View B", &viewTranslationB.x, -2.0f, 2.0f); // Edit 1 float using a slider from lower bounds to upper bounds
-
-            ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / io.Framerate, io.Framerate);
-            ImGui::End();
-        }
-
+        // ImGui render
         ImGui::Render();
         ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData()); 
 
