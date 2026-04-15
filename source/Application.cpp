@@ -75,7 +75,13 @@ int main(void)
     ImGui_ImplOpenGL3_Init("#version 330");
     ImGui::StyleColorsDark();
 
-    example::ExampleClearColor example;
+    // Set up Example Menu gui
+    example::Example* currentExample = nullptr;
+    example::ExampleMenu* exampleMenu = new example::ExampleMenu(currentExample);
+    currentExample = exampleMenu;
+
+    // Register examples
+    exampleMenu->RegisterExample<example::ExampleClearColor>("Clear Color");
 
     /* Loop until the user closes the window */
     while (!glfwWindowShouldClose(window))
@@ -83,15 +89,25 @@ int main(void)
         /* Render here */
         renderer.Clear();
 
-        example.OnUpdate(0.0f);
-        example.OnRender();
-
         // Start the Dear ImGui frame
         ImGui_ImplOpenGL3_NewFrame();
         ImGui_ImplGlfw_NewFrame();
         ImGui::NewFrame();
 
-        example.OnImGuiRender();
+        // Render current example
+        if (currentExample)
+        {
+            currentExample->OnUpdate(0.0f);
+            currentExample->OnRender();
+            ImGui::Begin("Example");
+            if (currentExample != exampleMenu && ImGui::Button("<-"))
+            {
+                delete currentExample;
+                currentExample = exampleMenu;
+            }
+            currentExample->OnImGuiRender();
+            ImGui::End();
+        }
 
         // ImGui render
         ImGui::Render();
@@ -105,6 +121,9 @@ int main(void)
     }
 
     // Cleanup
+    delete currentExample;
+    if (currentExample != exampleMenu) delete exampleMenu;
+
     ImGui_ImplOpenGL3_Shutdown();
     ImGui_ImplGlfw_Shutdown();
     ImGui::DestroyContext();

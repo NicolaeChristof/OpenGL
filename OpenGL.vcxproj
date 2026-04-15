@@ -133,6 +133,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="source\examples\Example.cpp" />
     <ClCompile Include="source\examples\ExampleClearColor.cpp" />
     <ClCompile Include="source\Shader.cpp" />
     <ClCompile Include="source\Application.cpp" />

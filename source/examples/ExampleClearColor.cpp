@@ -12,7 +12,7 @@ namespace example
 
 	ExampleClearColor::~ExampleClearColor()
 	{
-
+		GLCall(glClearColor(0.0f, 0.0f, 0.0f, 0.0f));
 	}
 
 	void ExampleClearColor::OnUpdate(float deltaTime)
