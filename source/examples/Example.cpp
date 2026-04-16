@@ -1,7 +1,6 @@
 #include "Example.h"
 
 #include "imgui/imgui.h"
-#include <iostream>
 
 namespace example
 {

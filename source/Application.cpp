@@ -22,6 +22,7 @@
 #include "imgui/imgui_impl_opengl3.h"
 
 #include "examples/ExampleClearColor.h"
+#include "examples/ExampleTexture2D.h"
 
 int main(void)
 {
@@ -82,6 +83,7 @@ int main(void)
 
     // Register examples
     exampleMenu->RegisterExample<example::ExampleClearColor>("Clear Color");
+    exampleMenu->RegisterExample<example::ExampleTexture2D>("Texture 2D");
 
     /* Loop until the user closes the window */
     while (!glfwWindowShouldClose(window))

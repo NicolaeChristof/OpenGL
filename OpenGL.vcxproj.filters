@@ -72,6 +72,9 @@
     <ClCompile Include="source\examples\Example.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="source\examples\ExampleTexture2D.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="resources\shaders\Basic.shader" />
@@ -1422,6 +1425,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="source\examples\ExampleClearColor.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="source\examples\ExampleTexture2D.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

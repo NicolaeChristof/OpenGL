@@ -135,6 +135,7 @@
   <ItemGroup>
     <ClCompile Include="source\examples\Example.cpp" />
     <ClCompile Include="source\examples\ExampleClearColor.cpp" />
+    <ClCompile Include="source\examples\ExampleTexture2D.cpp" />
     <ClCompile Include="source\Shader.cpp" />
     <ClCompile Include="source\Application.cpp" />
     <ClCompile Include="source\IndexBuffer.cpp" />
@@ -299,6 +300,7 @@
   <ItemGroup>
     <ClInclude Include="source\examples\ExampleClearColor.h" />
     <ClInclude Include="source\examples\Example.h" />
+    <ClInclude Include="source\examples\ExampleTexture2D.h" />
     <ClInclude Include="source\IndexBuffer.h" />
     <ClInclude Include="source\Renderer.h" />
     <ClInclude Include="source\Shader.h" />
