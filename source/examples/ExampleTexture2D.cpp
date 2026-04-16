@@ -47,7 +47,6 @@ namespace example
 
         m_Shader = std::make_unique<Shader>("resources/shaders/Basic.shader");
         m_Shader->Bind();
-        m_Shader->SetUniform4f("u_Color", 1.0f, 1.0f, 1.0f, 1.0f);
         m_Shader->SetUniform1i("u_Texture", 0);
 	}
 
