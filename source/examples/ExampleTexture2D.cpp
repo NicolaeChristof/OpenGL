@@ -6,7 +6,7 @@
 namespace example
 {
 	ExampleTexture2D::ExampleTexture2D() : m_Projection(glm::ortho(-1.0f, 1.0f, -1.0f, 1.0f, -1.0f, 1.0f)), 
-        m_ModeltranslationA(-0.5f, 0.0f, 0.0f), m_ModeltranslationB(0.5f, 0.0f, 0.0f), m_ViewTranslation(0.0f, 0.0f, 0.0f)
+        m_ModelTranslationA(-0.5f, 0.0f, 0.0f), m_ModelTranslationB(0.5f, 0.0f, 0.0f), m_ViewTranslation(0.0f, 0.0f, 0.0f)
 	{
         // vertexPos.x, vertexPos.y, textureCoord.x, textureCoord.y
         float positions[] =
@@ -69,7 +69,7 @@ namespace example
 
         // render texture A
         {
-            glm::mat4 model = glm::translate(glm::mat4(1.0f), m_ModeltranslationA);
+            glm::mat4 model = glm::translate(glm::mat4(1.0f), m_ModelTranslationA);
             glm::mat4 view = glm::translate(glm::mat4(1.0f), -m_ViewTranslation);
             glm::mat4 mvp = m_Projection * view * model;
             m_Shader->SetUniformMat4f("u_MVP", mvp);
@@ -78,7 +78,7 @@ namespace example
         }
         // render texture B
         {
-            glm::mat4 model = glm::translate(glm::mat4(1.0f), m_ModeltranslationB);
+            glm::mat4 model = glm::translate(glm::mat4(1.0f), m_ModelTranslationB);
             glm::mat4 view = glm::translate(glm::mat4(1.0f), -m_ViewTranslation);
             glm::mat4 mvp = m_Projection * view * model;
             m_Shader->SetUniformMat4f("u_MVP", mvp);
@@ -91,8 +91,8 @@ namespace example
 	{
         ImGui::Text("Move the sliders to modify the texture positions!");
 
-        ImGui::SliderFloat2("Model A", &m_ModeltranslationA.x, -1.0f, 1.0f); // Edit 1 float using a slider from lower bounds to upper bounds
-        ImGui::SliderFloat2("Model B", &m_ModeltranslationB.x, -1.0f, 1.0f); // Edit 1 float using a slider from lower bounds to upper bounds
+        ImGui::SliderFloat2("Model A", &m_ModelTranslationA.x, -1.0f, 1.0f); // Edit 1 float using a slider from lower bounds to upper bounds
+        ImGui::SliderFloat2("Model B", &m_ModelTranslationB.x, -1.0f, 1.0f); // Edit 1 float using a slider from lower bounds to upper bounds
 
         ImGui::SliderFloat2("'Camera'", &m_ViewTranslation.x, -1.0f, 1.0f); // Edit 1 float using a slider from lower bounds to upper bounds
         

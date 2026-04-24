@@ -34,8 +34,8 @@ namespace example
 		std::unique_ptr<Texture> m_Texture;
 
 		glm::mat4 m_Projection;
-		glm::vec3 m_ModeltranslationA;
-		glm::vec3 m_ModeltranslationB;
+		glm::vec3 m_ModelTranslationA;
+		glm::vec3 m_ModelTranslationB;
 		glm::vec3 m_ViewTranslation;
 	};
 }
